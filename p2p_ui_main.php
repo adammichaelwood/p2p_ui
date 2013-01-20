@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: P2P UI
-Plugin URI:
+Plugin URI: https://github.com/adammichaelwood/p2p_ui
 Description: Helps with Posts 2 Posts
 Version: 0.0.1
 Author: Adam Wood
-Author URI:
+Author URI: https://github.com/adammichaelwood
 License: In Progress
 */
 
