@@ -151,8 +151,8 @@ function p2pui_save_connection_meta($post_id, $post) {
     }
 	return;
 }
-add_action('save_post', 'p2pui_save_connection_meta');	
-add_action('save_post', 'p2pui_save_datatype_meta');
+add_action('save_post', 'p2pui_save_connection_meta', 10, 2);	
+add_action('save_post', 'p2pui_save_datatype_meta', 10, 2);
 
 function p2pui_setup_connections() {	//registers connection-types from each connection-type post
 	$get_post_args = array(
