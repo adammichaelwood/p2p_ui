@@ -161,36 +161,46 @@ function p2pui_setup_connections() {	//registers connection-types from each conn
 	);
 	$connections_to_register = get_posts( $get_post_args );
 	foreach ( $connections_to_register as $post ) :
-		setup_postdata($post);	
-		p2p_register_connection_type( array(		//function from the Posts-to-Posts plugin that actually registers the connection types
-			'name' => get_post_meta($post->ID, 'p2pui_connection_name', true),
-			'from' => get_post_meta($post->ID, 'p2pui_from_post_type', true),
-			'to' => get_post_meta($post->ID, 'p2pui_to_post_type', true),
-			'admin_box' => array(
-				'show' => 'any',
-				'context' => 'advanced'
-			),
-			'fields' => p2pui_get_connection_fields($post),	//see below
-			'cardinality' => get_post_meta($post->ID, 'p2pui_cardinality', true),
-			
-			
-			//The below commented lines are additional parameters I haven't gotten to yet, copied from the P2P documentation.
-			//'cardinality' => string How many connection can each post have: 'one-to-many', 'many-to-one' or 'many-to-many'. Default: 'many-to-many'
-			//'prevent_duplicates' => bool Whether to disallow duplicate connections between the same two posts. Default: true.
-			//'self_connections' => bool Whether to allow a post to connect to itself. Default: false.
-			//'sortable' => bool|string Whether to allow connections to be ordered via drag-and-drop. Can be 'from', 'to', 'any' or false. Default: false.
-			//'title' => string|array The box's title. Default: 'Connected {$post_type}s'
-			//'reciprocal' => bool For indeterminate connections: True means all connections are displayed in a single box. False means 'from' connections are shown in one box and 'to' connections are shown in another box. Default: false.
-			//'admin_box' => bool|string|array Whether and where to show the admin connections box.
-			//'can_create_post' => bool Whether to allow post creation via the connection box. Default: true.
-		));
+		$name = get_post_meta($post->ID, 'p2pui_connection_name', true);
+		$from = get_post_meta($post->ID, 'p2pui_from_post_type', true);
+		$to = get_post_meta($post->ID, 'p2pui_to_post_type', true);
+		
+		// Set the data only if postmeta isn't empty
+		if( ! empty( $name ) && ! empty( $from ) && ! empty( $to ) ) {
+			setup_postdata($post);	
+			p2p_register_connection_type( array(		//function from the Posts-to-Posts plugin that actually registers the connection types
+				'name' => $name,
+				'from' => $from,
+				'to' => $to,
+				'admin_box' => array(
+					'show' => 'any',
+					'context' => 'advanced'
+				),
+				'fields' => p2pui_get_connection_fields($post),	//see below
+				'cardinality' => get_post_meta($post->ID, 'p2pui_cardinality', true),
+				
+				
+				//The below commented lines are additional parameters I haven't gotten to yet, copied from the P2P documentation.
+				//'cardinality' => string How many connection can each post have: 'one-to-many', 'many-to-one' or 'many-to-many'. Default: 'many-to-many'
+				//'prevent_duplicates' => bool Whether to disallow duplicate connections between the same two posts. Default: true.
+				//'self_connections' => bool Whether to allow a post to connect to itself. Default: false.
+				//'sortable' => bool|string Whether to allow connections to be ordered via drag-and-drop. Can be 'from', 'to', 'any' or false. Default: false.
+				//'title' => string|array The box's title. Default: 'Connected {$post_type}s'
+				//'reciprocal' => bool For indeterminate connections: True means all connections are displayed in a single box. False means 'from' connections are shown in one box and 'to' connections are shown in another box. Default: false.
+				//'admin_box' => bool|string|array Whether and where to show the admin connections box.
+				//'can_create_post' => bool Whether to allow post creation via the connection box. Default: true.
+			));
+		}
 	endforeach;
 }
 add_action( 'wp_loaded', 'p2pui_setup_connections' );	//run the connections generator after WP loads
 
 function p2pui_get_connection_fields($post) {		//sifts through the meta-data of the connection-type post to find the fields of data that should be included for recording connection meta-data 
-		// These serve as Connection Attributes. Each attribute is recorded as several separate pieces of meta-data
-		// on the post that creates the Connection-Type.
+	// These serve as Connection Attributes. Each attribute is recorded as several separate pieces of meta-data
+	// on the post that creates the Connection-Type.
+	
+	// Initialize fields to avoid null if get_post_meta returns empty array
+	$fields = array();
 	for ($i = 0; get_post_meta( $post->ID, 'fieldkey'.$i, true ); $i++) {
 		${'fieldkey'.$i} = get_post_meta( $post->ID, 'fieldkey'.$i, true );
 		$fields[${'fieldkey'.$i}] = array(
