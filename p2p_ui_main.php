@@ -161,6 +161,10 @@ add_action('save_post', 'p2pui_save_connection_meta', 10, 2);
 add_action('save_post', 'p2pui_save_datatype_meta', 10, 2);
 
 function p2pui_setup_connections() {	//registers connection-types from each connection-type post
+        // Prevent fatal error if posts to posts has been deactivated
+        if ( ! function_exists( 'p2p_register_connection_type' ) )
+            return; 
+
 	$get_post_args = array(
 		'numberposts'     => -1, // Get all of them
 		'post_type'       => 'p2pui_connect_type',
