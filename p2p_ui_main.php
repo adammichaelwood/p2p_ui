@@ -119,14 +119,20 @@ function p2pui_datatype_is_hierarchical($post, $hierarchical) {
 }
 
 function p2pui_save_datatype_meta($post_id, $post) {
-	if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-       return;
-	if('p2pui_datatype' == $_POST['post_type']) {
-		if(!current_user_can('edit_page', $post_id))
-           return;
-		}
+        if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+            return;
+
+        if ( ! isset( $_POST['post_type'] ) )
+            return;
+
+	if( 'p2pui_datatype' == $_POST['post_type']) {
+            if(!current_user_can('edit_page', $post_id))
+                return;
+	}
+
 	else if(!current_user_can('edit_post', $post_id))
 		return;
+
 	if(isset($_POST['p2pui_datatype_nonce']) && wp_verify_nonce($_POST['p2pui_datatype_nonce'], plugins_url(__FILE__)) && check_admin_referer(plugins_url(__FILE__), 'p2pui_datatype_nonce')) {
 		update_post_meta($post_id, 'p2pui_datatype_name_single', $_POST['p2pui_datatype_name_single']);
 		update_post_meta($post_id, 'p2pui_datatype_name_plural', $_POST['p2pui_datatype_name_plural']);
@@ -138,7 +144,7 @@ function p2pui_save_datatype_meta($post_id, $post) {
 function p2pui_save_connection_meta($post_id, $post) {	
 	if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
        return;
-	if('p2pui_connect_type' == $_POST['post_type']) {
+	if( isset( $_POST['post_type'] ) && 'p2pui_connect_type' == $_POST['post_type']) {
 		if(!current_user_can('edit_page', $post_id))
            return;
 		}
@@ -155,6 +161,10 @@ add_action('save_post', 'p2pui_save_connection_meta', 10, 2);
 add_action('save_post', 'p2pui_save_datatype_meta', 10, 2);
 
 function p2pui_setup_connections() {	//registers connection-types from each connection-type post
+        // Prevent fatal error if posts to posts has been deactivated
+        if ( ! function_exists( 'p2p_register_connection_type' ) )
+            return; 
+
 	$get_post_args = array(
 		'numberposts'     => -1, // Get all of them
 		'post_type'       => 'p2pui_connect_type',
