@@ -202,6 +202,11 @@ function p2pui_setup_connections() {	//registers connection-types from each conn
 		// Set the data only if postmeta isn't empty
 		if( ! empty( $name ) && ! empty( $from ) && ! empty( $to ) ) {
 			setup_postdata($post);	
+                        $cardinality = get_post_meta($post->ID, 'p2pui_cardinality', true);
+                        // Default to one-to-many
+                        if( empty( $cardinality ) ) {
+                            $cardinality = 'one-to-many';    
+                        } 
 			p2p_register_connection_type( array(		//function from the Posts-to-Posts plugin that actually registers the connection types
 				'name' => $name,
 				'from' => $from,
@@ -211,7 +216,7 @@ function p2pui_setup_connections() {	//registers connection-types from each conn
 					'context' => 'advanced'
 				),
 				'fields' => p2pui_get_connection_fields($post),	//see below
-				'cardinality' => get_post_meta($post->ID, 'p2pui_cardinality', true),
+				'cardinality' => $cardinality,
 				
 				
 				//The below commented lines are additional parameters I haven't gotten to yet, copied from the P2P documentation.
