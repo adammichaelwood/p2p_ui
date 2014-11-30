@@ -16,8 +16,8 @@ function p2pui_setup_maker_post_types() {
 				'name' => 'Data Types',
 				'singular_name' => 'Data Type'
 			),
-		'public' => true,
-		'has_archive' => true,
+		'public' => false,
+		'has_archive' => false,
 		'menu_position' => 101,
 		'supports' => array('title', 'editor', 'custom-fields', 'excerpt', 'comments'),
 		'register_meta_box_cb' => 'p2pui_datatype_meta',
@@ -31,8 +31,8 @@ function p2pui_setup_maker_post_types() {
 				'name' => 'Connections',
 				'singular_name' => 'Connection'
 			),
-		'public' => true,
-		'has_archive' => true,
+		'public' => false,
+		'has_archive' => false,
 		'menu_position' => 102,
 		'supports' => array('title', 'editor', 'custom-fields')
 		)
@@ -79,6 +79,25 @@ function p2pui_connection_meta_content ( $post ) {
 			<?php } 
 		endforeach; ?>
 	</select><br/>
+	<label for="p2pui_cardinality">Cardinality</label><br/>
+	<select id="p2pui_cardinality" name="p2pui_cardinality">
+		<?php 
+		$p2pui_cardinality = array(
+			'one-to-many' => 'One to many',
+			'many-to-one' => 'Many to one',
+			'many-to-many' => 'Many to many',
+		);
+		$saved_cardinality = get_post_meta($post->ID, 'p2pui_cardinality', true);
+
+		foreach( $p2pui_cardinality as $cardinality_key => $cardinality_value ):
+			if( $saved_cardinality === $cardinality_key ) {
+		?>
+			<option value="<?php echo $cardinality_key; ?>" selected="selected"><?php echo $cardinality_value; ?></option>
+		<?php } else { ?>
+			<option value="<?php echo $cardinality_key; ?>"><?php echo $cardinality_value; ?></option>
+		<?php }
+		endforeach; ?>
+	</select>
 <?php	}
 add_action( 'add_meta_boxes', 'p2pui_setup_metabox' );	//run the meta-box adding functions at just the right moment
 
@@ -154,6 +173,7 @@ function p2pui_save_connection_meta($post_id, $post) {
 		update_post_meta($post_id, 'p2pui_connection_name', $_POST['p2pui_connection_name']);
 		update_post_meta($post_id, 'p2pui_from_post_type', $_POST['p2pui_from_post_type']);
 		update_post_meta($post_id, 'p2pui_to_post_type', $_POST['p2pui_to_post_type']);
+		update_post_meta($post_id, 'p2pui_cardinality', $_POST['p2pui_cardinality']);
     }
 	return;
 }
