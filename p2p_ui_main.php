@@ -18,6 +18,8 @@ function p2pui_setup_maker_post_types() {
 			),
 		'public' => false,
 		'has_archive' => false,
+                'show_in_menu' => true,
+                'show_ui' => true,
 		'menu_position' => 101,
 		'supports' => array('title', 'editor', 'custom-fields', 'excerpt', 'comments'),
 		'register_meta_box_cb' => 'p2pui_datatype_meta',
@@ -32,6 +34,8 @@ function p2pui_setup_maker_post_types() {
 				'singular_name' => 'Connection'
 			),
 		'public' => false,
+                'show_in_menu' => true,
+                'show_ui' => true,
 		'has_archive' => false,
 		'menu_position' => 102,
 		'supports' => array('title', 'editor', 'custom-fields')
